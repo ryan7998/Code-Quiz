@@ -1,9 +1,9 @@
 var body = document.body;
 var corrAnsSum = 0;
-let flag = 0;
-let timeLeft = 0;
+var flag = 0;
+var timeLeft = 0;
 
-// Question answers:
+// Question Bank:
 var quizQuestions = [
 	{
 		question: "What is 10/2?",
@@ -28,8 +28,7 @@ var quizQuestions = [
 var startBtnEl = document.createElement("button");
 startBtnEl.innerText="Start Test";
 
-var checkAnsBtn = document.createElement("button");
-checkAnsBtn.innerText="Next Question";
+// Create first page Elements:
 
 var h1El = document.createElement('h1');
 h1El.textContent = 'Welcome to my page';
@@ -40,8 +39,20 @@ h2El.textContent = 'This is a timed coding quiz with multiple-choice questions';
 var fpageDiv = document.createElement('div');
 body.appendChild(fpageDiv);
 
+var headerDiv = document.createElement('div');
+var hscoreDiv = document.createElement('div');
+
+hscoreDiv.textContent = "High Score";
+
 var timerDiv = document.createElement('div');
-body.appendChild(timerDiv);
+headerDiv.appendChild(hscoreDiv);
+headerDiv.appendChild(timerDiv);
+
+body.appendChild(headerDiv);
+
+var mainDiv = document.createElement('div');
+var footerDiv = document.createElement('div');
+
 
 var qaDiv = document.createElement('div');
 
@@ -51,19 +62,28 @@ qaDiv.appendChild(qDiv);
 var aDiv = document.createElement('div');
 qaDiv.appendChild(aDiv);
 
-body.appendChild(qaDiv);
+mainDiv.appendChild(qaDiv);
+body.appendChild(mainDiv);
 
+body.appendChild(footerDiv);
+
+var resultDiv = document.createElement('div');
+footerDiv.appendChild(resultDiv);
+
+// first page:
 fpageDiv.appendChild(startBtnEl);
 fpageDiv.appendChild(h1El);
 fpageDiv.appendChild(h2El);
 
-body.setAttribute('style', 'font-family: sans-serif;');
+// set css style:
+body.setAttribute('style', 'font-family: sans-serif; font-family: sans-serif; padding: 20px; margin: 20px;');
+headerDiv.setAttribute('style', 'display: flex; justify-content: space-between; margin:20px;');
 fpageDiv.setAttribute('style', 'margin-top: 5em; display: flex; flex-direction: column; align-items: center; justify-content: center;');
 startBtnEl.setAttribute('style', 'width: 20%; height: 100px; background: #171f4f; color: #fff; font-size: 2em; border-radius: 10px;');
 
 // Start Timer Function:
 function startTimer(){
-    timeLeft = 20;
+    timeLeft = 2000;
     var timeInterval = setInterval(function() {
         timerDiv.textContent = 'Time Left: ' + timeLeft + ' s';
         timeLeft--;
@@ -76,8 +96,9 @@ function startTimer(){
 
 // function end quiz:
 function endQuiz(){
-    body.textContent="";
-    body.textContent="Time Up. Your final score is: " + corrAnsSum + ".";
+    //body.textContent="";
+    mainDiv.textContent="Time Up. Your final score is: " + corrAnsSum + ".";
+    
 }
 
 // function show questions
@@ -85,10 +106,9 @@ function showQuestion(question){
     var ques = question.question;
     var ans = question.answers;
     var corAns = question.correctAnswer;
-
-    if(printQuestion(ques, ans, corAns)){
-        checkAnsBtn.addEventListener("click", checkCorrectAnswers());
-    }
+    
+    // call print questions function: 
+    printQuestion(ques, ans, corAns);
 }
 
 // function print questions
@@ -97,45 +117,26 @@ function printQuestion(ques, ans, corAns){
     aDiv.textContent="";
     qDiv.textContent += ques;
     for(letter in ans){
-        aDiv.innerHTML += 
-        /* '<label>'
-            + '<input type="radio" name="question" value="'+letter+'">'
-            + letter + ': '
-            + ans[letter]
-        + '</label>'; */
-        
-        '<a onclick="check(event)" href="javascript:;" value = ' + letter + ' correctans = ' + corAns + '>' + letter + ': ' + ans[letter] + '</a>' + '</br>';
+        aDiv.innerHTML +=        
+        '<a class="linkbutton" onclick="check(event)" href="javascript:;" value = ' + letter + ' correctans = ' + corAns + '>' + letter + ': ' + ans[letter] + '</a>' + '</br>';
     }
-    //body.appendChild(checkAnsBtn);
-    //checkAnsBtn.setAttribute('correctans', corAns);
-    //checkAnsBtn.addEventListener("click", checkAnswerHandler);
 }
+
 function check(event) {
     var getAns = event.target.getAttribute("value");
     var correctAns = event.target.getAttribute("correctans");
     if(getAns === correctAns){
         corrAnsSum++;
+        resultDiv.textContent = "Correct Answer";
     }
     else{
         timeLeft = timeLeft - 10;
+        resultDiv.textContent = "Wrong Answer";
     }
     flag++; 
     startQuiz(flag);
 }
-//function check answers:
-/* var checkAnswerHandler = function(event) {
-    var getSelected = document.querySelector('input[name="question"]:checked').value;
-    var targetEl = event.target.getAttribute("correctans");
-    
-    if(getSelected === targetEl){
-        corrAnsSum++;
-    }
-    else{
-        timeLeft = timeLeft - 10;
-    }
-    flag++; 
-    startQuiz(flag);
-} */
+
 
 // Start Quiz Function:
 function startQuiz(){
@@ -148,7 +149,7 @@ function startQuiz(){
 
 // Start button Function:
 var startBtnHandler = function(event){
-    fpageDiv.textContent="";
+    fpageDiv.remove();
     startTimer();
     startQuiz();
 }
