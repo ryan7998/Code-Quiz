@@ -1,6 +1,8 @@
 var body = document.body;
 var corrAnsSum = 0;
 let flag = 0;
+let timeLeft = 0;
+
 // Question answers:
 var quizQuestions = [
 	{
@@ -15,8 +17,8 @@ var quizQuestions = [
 	{
 		question: "What is 30/3?",
 		answers: {
-			a: '3',
-			b: '5',
+			a: '4',
+			b: '8',
 			c: '10'
 		},
 		correctAnswer: 'c'
@@ -42,13 +44,14 @@ var timerDiv = document.createElement('div');
 body.appendChild(timerDiv);
 
 var qaDiv = document.createElement('div');
-body.appendChild(qaDiv);
 
 var qDiv = document.createElement('div');
 qaDiv.appendChild(qDiv);
 
 var aDiv = document.createElement('div');
 qaDiv.appendChild(aDiv);
+
+body.appendChild(qaDiv);
 
 fpageDiv.appendChild(startBtnEl);
 fpageDiv.appendChild(h1El);
@@ -60,7 +63,7 @@ startBtnEl.setAttribute('style', 'width: 20%; height: 100px; background: #171f4f
 
 // Start Timer Function:
 function startTimer(){
-    var timeLeft = 5;
+    timeLeft = 20;
     var timeInterval = setInterval(function() {
         timerDiv.textContent = 'Time Left: ' + timeLeft + ' s';
         timeLeft--;
@@ -95,38 +98,51 @@ function printQuestion(ques, ans, corAns){
     qDiv.textContent += ques;
     for(letter in ans){
         aDiv.innerHTML += 
-        '<label>'
+        /* '<label>'
             + '<input type="radio" name="question" value="'+letter+'">'
             + letter + ': '
             + ans[letter]
-        + '</label>';
+        + '</label>'; */
+        
+        '<a onclick="check(event)" href="javascript:;" value = ' + letter + ' correctans = ' + corAns + '>' + letter + ': ' + ans[letter] + '</a>' + '</br>';
     }
-    body.appendChild(checkAnsBtn);
-    checkAnsBtn.setAttribute('correctans', corAns);
-    checkAnsBtn.addEventListener("click", checkAnswerHandler);
+    //body.appendChild(checkAnsBtn);
+    //checkAnsBtn.setAttribute('correctans', corAns);
+    //checkAnsBtn.addEventListener("click", checkAnswerHandler);
 }
-
+function check(event) {
+    var getAns = event.target.getAttribute("value");
+    var correctAns = event.target.getAttribute("correctans");
+    if(getAns === correctAns){
+        corrAnsSum++;
+    }
+    else{
+        timeLeft = timeLeft - 10;
+    }
+    flag++; 
+    startQuiz(flag);
+}
 //function check answers:
-var checkAnswerHandler = function(event) {
+/* var checkAnswerHandler = function(event) {
     var getSelected = document.querySelector('input[name="question"]:checked').value;
     var targetEl = event.target.getAttribute("correctans");
     
     if(getSelected === targetEl){
         corrAnsSum++;
     }
+    else{
+        timeLeft = timeLeft - 10;
+    }
     flag++; 
     startQuiz(flag);
-}
+} */
 
 // Start Quiz Function:
 function startQuiz(){
-    console.log(flag, quizQuestions.length);
-    //var i=0;
- 
     if(flag < quizQuestions.length ){
         showQuestion(quizQuestions[flag]);
     }else{
-        console.log("Score: " + corrAnsSum);
+        endQuiz();
     }
 }
 
