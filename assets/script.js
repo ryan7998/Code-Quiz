@@ -2,6 +2,8 @@ var body = document.body;
 var corrAnsSum = 0;
 var flag = 0;
 var timeLeft = 0;
+var highscore = 0;
+var highScorearr = [];
 
 // Question Bank:
 var quizQuestions = [
@@ -42,7 +44,7 @@ body.appendChild(fpageDiv);
 var headerDiv = document.createElement('div');
 var hscoreDiv = document.createElement('div');
 
-hscoreDiv.textContent = "High Score";
+hscoreDiv.innerHTML = '<a onclick="getHighScore()" href="javascript:;"> Show High Score </a>';
 
 var timerDiv = document.createElement('div');
 headerDiv.appendChild(hscoreDiv);
@@ -75,6 +77,14 @@ fpageDiv.appendChild(startBtnEl);
 fpageDiv.appendChild(h1El);
 fpageDiv.appendChild(h2El);
 
+// input for high score:
+var inputSaveScore = document.createElement('input');
+inputSaveScore.id = 'hscoreEl';
+
+// button to save high score:
+var btnSaveScore = document.createElement('button');
+btnSaveScore.innerText="Save High Score";
+
 // set css style:
 body.setAttribute('style', 'font-family: sans-serif; font-family: sans-serif; padding: 20px; margin: 20px;');
 headerDiv.setAttribute('style', 'display: flex; justify-content: space-between; margin:20px;');
@@ -96,10 +106,13 @@ function startTimer(){
 
 // function end quiz:
 function endQuiz(){
-    //body.textContent="";
-    mainDiv.textContent="Time Up. Your final score is: " + corrAnsSum + ".";
+    mainDiv.textContent="Time Up. Your final score is: " + timeLeft + ".";
     
+    // Show input and button to sace high score
+    mainDiv.appendChild(inputSaveScore);
+    mainDiv.appendChild(btnSaveScore);
 }
+
 
 // function show questions
 function showQuestion(question){
@@ -131,6 +144,7 @@ function check(event) {
     }
     else{
         timeLeft = timeLeft - 10;
+        
         resultDiv.textContent = "Wrong Answer";
     }
     flag++; 
@@ -147,12 +161,52 @@ function startQuiz(){
     }
 }
 
+function getHighScore(){
+    mainDiv.textContent = '';
+
+    var highScorearr = JSON.parse(localStorage.getItem("highscoredetails"));
+
+    if(highScorearr != null){
+        for(i = 0; i<highScorearr.length; i++){
+            mainDiv.innerHTML += 'Name: '+ highScorearr[i].initials + '. High Score: ' + highScorearr[i].highscore + "</br>";
+        }
+    }else{
+        mainDiv.textContent = 'No High score set yet';
+    }
+}
+
 // Start button Function:
 var startBtnHandler = function(event){
     fpageDiv.remove();
     startTimer();
     startQuiz();
 }
+var saveHighScoreHandler = function(event){
+    var getInitials = document.getElementById('hscoreEl').value;
+    //console.log(getInitials);
+    if(getInitials == ""){
+        alert('Please Enter your initials ');
+    }else{
+        // create obj for high score:
+        var highScoreObj = {
+            initials: getInitials,
+            highscore: timeLeft
+        };
 
+        var highScorearr = JSON.parse(localStorage.getItem("highscoredetails"));
+
+        if(highScorearr != null){   // if highscore array is not empty:
+            highScorearr.push(highScoreObj);
+            highScorearr = highScorearr.sort((a, b) => (a.highscore > b.highscore) ? -1 : 1);   // sort array by high score
+        }else{
+            highScorearr=[];
+            highScorearr.push(highScoreObj);
+        }
+        localStorage.setItem("highscoredetails", JSON.stringify(highScorearr));
+    }
+}
 // Start button click:
 startBtnEl.addEventListener("click", startBtnHandler);
+
+// Save High Score button Click:
+btnSaveScore.addEventListener("click", saveHighScoreHandler);
