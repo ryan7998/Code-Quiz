@@ -4,26 +4,58 @@ var flag = 0;
 var timeLeft = 0;
 var highscore = 0;
 var highScorearr = [];
+var finalScore = 0;
+var timeInterval = 0;
 
 // Question Bank:
 var quizQuestions = [
 	{
-		question: "What is 10/2?",
+		question: "Is JavaScript a case-sensitive language?",
 		answers: {
-			a: '3',
-			b: '5',
-			c: '115'
+			a: 'True',
+			b: 'False'
 		},
-		correctAnswer: 'b'
+		correctAnswer: 'a'
 	},
 	{
-		question: "What is 30/3?",
+		question: "Which of the following is a valid type of function javascript supports?",
 		answers: {
-			a: '4',
-			b: '8',
-			c: '10'
+			a: 'named function',
+			b: 'anonymous function',
+            c: 'Both of the above',
+            d: 'None of the above'
 		},
 		correctAnswer: 'c'
+    },
+    {
+		question: "Which built-in method removes the last element from an array and returns that element?",
+		answers: {
+			a: 'last()',
+			b: 'get()',
+            c: 'pop()',
+            d: 'None of the above'
+		},
+		correctAnswer: 'c'
+    },
+    {
+		question: "Which of the following code creates an object?",
+		answers: {
+			a: 'var book = Object();',
+			b: 'var book = new Object();',
+            c: 'var book = new OBJECT();',
+            d: 'var book = new Book();'
+		},
+		correctAnswer: 'b'
+    },
+    {
+		question: "Which of the following function of Boolean object returns a string containing the source of the Boolean object?",
+		answers: {
+			a: 'toSource()',
+			b: 'valueOf()',
+            c: 'toString()',
+            d: 'None of the above'
+		},
+		correctAnswer: 'a'
 	}
 ];
 
@@ -45,6 +77,8 @@ var headerDiv = document.createElement('div');
 var hscoreDiv = document.createElement('div');
 
 hscoreDiv.innerHTML = '<a onclick="getHighScore()" href="javascript:;"> Show High Score </a>';
+hscoreDiv.querySelector('a').setAttribute('style', 'text-decoration:none');
+
 
 var timerDiv = document.createElement('div');
 headerDiv.appendChild(hscoreDiv);
@@ -58,7 +92,7 @@ var footerDiv = document.createElement('div');
 
 var qaDiv = document.createElement('div');
 
-var qDiv = document.createElement('div');
+var qDiv = document.createElement('h1');
 qaDiv.appendChild(qDiv);
 
 var aDiv = document.createElement('div');
@@ -69,7 +103,7 @@ body.appendChild(mainDiv);
 
 body.appendChild(footerDiv);
 
-var resultDiv = document.createElement('div');
+var resultDiv = document.createElement('h2');
 footerDiv.appendChild(resultDiv);
 
 // first page:
@@ -84,6 +118,18 @@ inputSaveScore.id = 'hscoreEl';
 // button to save high score:
 var btnSaveScore = document.createElement('button');
 btnSaveScore.innerText="Save High Score";
+btnSaveScore.setAttribute('style', 'background: #171f4f; color: #fff; border-radius: 5px; padding:5px; margin: 0 10px');
+
+// button to go back:
+var btnGoback = document.createElement('button');
+btnGoback.innerText="Go back";
+btnGoback.setAttribute('style', 'background: #171f4f; color: #fff; border-radius: 5px; padding:5px; margin: 0 10px');
+
+// button clear high score:
+var btnClearScore = document.createElement('button');
+btnClearScore.innerText="Clear Score";
+btnClearScore.setAttribute('style', 'background: #171f4f; color: #fff; border-radius: 5px; padding:5px; margin: 0 10px');
+
 
 // set css style:
 body.setAttribute('style', 'font-family: sans-serif; font-family: sans-serif; padding: 20px; margin: 20px;');
@@ -94,7 +140,7 @@ startBtnEl.setAttribute('style', 'width: 20%; height: 100px; background: #171f4f
 // Start Timer Function:
 function startTimer(){
     timeLeft = 2000;
-    var timeInterval = setInterval(function() {
+    timeInterval = setInterval(function() {
         timerDiv.textContent = 'Time Left: ' + timeLeft + ' s';
         timeLeft--;
         if(timeLeft == 0){
@@ -106,9 +152,13 @@ function startTimer(){
 
 // function end quiz:
 function endQuiz(){
-    mainDiv.textContent="Time Up. Your final score is: " + timeLeft + ".";
+    finalScore = timeLeft;
+    clearInterval(timeInterval);
+    timerDiv.textContent="";
+    mainDiv.innerHTML="<h2>All Done!!</h2> Your final score is: " + finalScore + ".</br></br>";
     
     // Show input and button to sace high score
+    mainDiv.innerHTML += "<label>Enter Initials: </label>";
     mainDiv.appendChild(inputSaveScore);
     mainDiv.appendChild(btnSaveScore);
 }
@@ -133,6 +183,11 @@ function printQuestion(ques, ans, corAns){
         aDiv.innerHTML +=        
         '<a class="linkbutton" onclick="check(event)" href="javascript:;" value = ' + letter + ' correctans = ' + corAns + '>' + letter + ': ' + ans[letter] + '</a>' + '</br>';
     }
+    var all = document.getElementsByClassName('linkbutton');
+    for (var i = 0; i < all.length; i++) {
+        all[i].setAttribute('style', 'text-align: center; color: white; background: #171f4f; padding: 10px; text-decoration: none; border-radius: 5px; width: 100px;');
+    }
+    aDiv.setAttribute('style', 'display:flex; flex-direction:column');
 }
 
 function check(event) {
@@ -144,9 +199,9 @@ function check(event) {
     }
     else{
         timeLeft = timeLeft - 10;
-        
         resultDiv.textContent = "Wrong Answer";
     }
+    resultDiv.setAttribute('style', 'font-style: italic; color: grey; border-top: 2px solid; padding: 10px;');
     flag++; 
     startQuiz(flag);
 }
@@ -163,6 +218,9 @@ function startQuiz(){
 
 function getHighScore(){
     mainDiv.textContent = '';
+    fpageDiv.textContent='';
+    headerDiv.textContent='';
+    footerDiv.textContent='';
 
     var highScorearr = JSON.parse(localStorage.getItem("highscoredetails"));
 
@@ -173,6 +231,8 @@ function getHighScore(){
     }else{
         mainDiv.textContent = 'No High score set yet';
     }
+    mainDiv.appendChild(btnGoback);
+    mainDiv.appendChild(btnClearScore);
 }
 
 // Start button Function:
@@ -181,6 +241,8 @@ var startBtnHandler = function(event){
     startTimer();
     startQuiz();
 }
+
+// Save high score Handler:
 var saveHighScoreHandler = function(event){
     var getInitials = document.getElementById('hscoreEl').value;
     //console.log(getInitials);
@@ -190,7 +252,7 @@ var saveHighScoreHandler = function(event){
         // create obj for high score:
         var highScoreObj = {
             initials: getInitials,
-            highscore: timeLeft
+            highscore: finalScore
         };
 
         var highScorearr = JSON.parse(localStorage.getItem("highscoredetails"));
@@ -203,10 +265,26 @@ var saveHighScoreHandler = function(event){
             highScorearr.push(highScoreObj);
         }
         localStorage.setItem("highscoredetails", JSON.stringify(highScorearr));
+        getHighScore();
     }
 }
+
+// Back Button Handler:
+var backButtonHandler = function(event){
+    location.reload();
+}
+var clearScoreHandler = function(event){
+    localStorage.clear();
+    location.reload();
+}
+
 // Start button click:
 startBtnEl.addEventListener("click", startBtnHandler);
 
 // Save High Score button Click:
 btnSaveScore.addEventListener("click", saveHighScoreHandler);
+
+// Go Back button Click:
+btnGoback.addEventListener("click", backButtonHandler);
+
+btnClearScore.addEventListener("click", clearScoreHandler);
