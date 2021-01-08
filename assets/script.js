@@ -68,7 +68,7 @@ startBtnEl.innerText="Start Test";
 
 // Create Home page Elements:
 var h1El = document.createElement('h1');
-h1El.textContent = 'Welcome to my page';
+h1El.textContent = 'Welcome to Multiple Question Quiz on Java Script';
 
 var h2El = document.createElement('h2');
 h2El.textContent = 'This is a timed coding quiz with multiple-choice questions';
