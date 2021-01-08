@@ -159,17 +159,21 @@ function startTimer(){
 
 /*  End Quiz Function:
     This is initiated after time is over from startTimer function
-    Gets parameter el: if value is timeup, set message to Time Up and set score to  0.
-    If initiated after the Quiz is over Show Final score  And asks to save score with Initials
+    Gets parameter el: if value is timeup, set message to Time Up and set score to total correct answer sum
+    If initiated after the Quiz is over set final score to time left + correct answer sum Show Final score  And asks to save score with Initials
 */ 
 function endQuiz(el){
     if(el == 'timeup'){
-        finalScore = 0;
+        finalScore = corrAnsSum;
         clearInterval(timeInterval);
         timerDiv.textContent="";
         mainDiv.innerHTML="<h2>Time Up!!</h2> Your final score is: " + finalScore + ".</br></br>";
     }else{
-        finalScore = timeLeft;
+        if(corrAnsSum == 0){
+            finalScore = 0;     // if answered all answers wrong and still time is left, set final score to 0
+        }else{
+            finalScore = timeLeft + corrAnsSum;     // set finalscore to timeleft + correctanswer sum
+        }
         clearInterval(timeInterval);
         timerDiv.textContent="";
         mainDiv.innerHTML="<h2>All Done!!</h2> Your final score is: " + finalScore + ".</br></br>";
@@ -211,7 +215,7 @@ function printQuestion(ques, ans, corAns){
     }
     var all = document.getElementsByClassName('linkbutton');
     for (var i = 0; i < all.length; i++) {
-        all[i].setAttribute('style', 'text-align: center; color: white; background: #171f4f; padding: 10px; text-decoration: none; border-radius: 5px; width: 100px;');
+        all[i].setAttribute('style', 'text-align: center; color: white; background: #171f4f; padding: 10px; text-decoration: none; border-radius: 5px; width: 200px;');
     }
     aDiv.setAttribute('style', 'display:flex; flex-direction:column');
 }
@@ -226,7 +230,7 @@ function check(event) {
     var getAns = event.target.getAttribute("value");
     var correctAns = event.target.getAttribute("correctans");
     if(getAns === correctAns){
-        corrAnsSum++;
+        corrAnsSum += 10;
         resultDiv.textContent = "Correct Answer";
     }
     else{
